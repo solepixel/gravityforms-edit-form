@@ -122,7 +122,8 @@ function gfef_get_form_id_from_array( $array ){
 		if( is_array( $value ) ){
 			$form_id = gfef_get_form_id_from_array( $value );
 		} elseif( is_string( $value ) ) {
-			$form_id = gfef_get_form_id_from_content( $value );
+			if( has_shortcode( $value, 'gravityform' ) )
+				$form_id = gfef_get_form_id_from_content( $value );
 		}
 		if( $form_id ) // let's quit when we find one.
 			break;
