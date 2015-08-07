@@ -22,7 +22,7 @@
 
 		build_form_menu: function( form ){
 			var $parent = this.create_top_menu(),
-				context = 'gfef-form-' + form.form_id,
+				context = 'gfef-' + form.schema + '-form-' + form.form_id,
 				edit_url = this.get_edit_url( form ),
 				title = this.get_title( form, context );
 
@@ -36,11 +36,14 @@
 					$submenu.find('ul').append( this.create_menu_item( context + property, url, title ) );
 				}
 			} else {
-				$parent.append( this.create_menu_item( 'gfef', edit_url, title ) );
+				$parent.append( this.create_menu_item( context, edit_url, title ) );
 			}
 		}, // build_form_menu
 
 		get_title: function( form, context ){
+			if( form.title )
+				return form.title;
+
 			if( ! this.schema.callback )
 				return 'Edit Form ' + this.counter;
 
@@ -54,6 +57,7 @@
 						$('#wp-admin-bar-' + context ).find('a:first').text( response.form_title )
 				}
 			});
+
 			return 'Edit Form ' + this.counter;
 		}, // get_title
 
@@ -73,8 +77,8 @@
 
 			var $li = this.create_sub_menu( context, '#', 'Edit Forms' );
 
-			this.$target = $('#wp-admin-bar-edit');
-			this.$target.after( $li );
+			this.$target = $('#wp-admin-bar-root-default');
+			this.$target.append( $li );
 
 			return $('#wp-admin-bar-' + context + '-default');
 		}, // create_top_menu
@@ -107,6 +111,38 @@
 	 */
 	$(document).bind( 'gform_post_render', function( e, form_id, current_page ){
 		GFEF.add_menu( { form_id: form_id, schema: 'gravityforms' } );
+	});
+
+	/**
+	 * Contact Form 7 Implementation
+	 */
+	$(function(){
+		$.each( $('.wpcf7-form'), function( i, el ){
+			var form_id = $(el).find('input[name="_wpcf7"]').val();
+			GFEF.add_menu( { form_id: form_id, schema: 'cf7' } );
+		});
+	});
+
+	/**
+	 * Ninja Forms Implementation
+	 */
+	$(function(){
+		$.each( $('.ninja-forms-form'), function( i, el ){
+			var form_id = $(el).find('input[name="_form_id"]').val();
+			GFEF.add_menu( { form_id: form_id, schema: 'ninjaforms' } );
+		});
+	});
+
+	/**
+	 * Formidable Implementation
+	 */
+	$(function(){
+		// hide the Existing Edit Button
+		$('#wp-admin-bar-frm-forms').hide();
+		$.each( $('.frm_style_formidable-style'), function( i, el ){
+			var form_id = $(el).find('input[name="form_id"]').val();
+			GFEF.add_menu( { form_id: form_id, schema: 'formidable' } );
+		});
 	});
 
 })(jQuery);
